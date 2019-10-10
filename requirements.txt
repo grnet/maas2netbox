@@ -1,0 +1,2 @@
+pbr!=2.1.0
+python-libmaas==0.6.4

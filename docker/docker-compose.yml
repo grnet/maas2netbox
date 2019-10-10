@@ -1,0 +1,12 @@
+---
+version: '3'
+services:
+  maas2netbox:
+    build:
+      context: .
+      args:
+        branch: master
+    container_name: maas2netbox
+    tty: true
+    volumes:
+      - ./config.yml:/usr/local/lib/python3.6/site-packages/maas2netbox/user_config/config.yml

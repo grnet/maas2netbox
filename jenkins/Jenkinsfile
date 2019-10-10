@@ -1,0 +1,84 @@
+pipeline {
+    agent none
+    triggers {
+        cron('H 4 * * *')
+    }
+    stages {
+        stage('Daily NetBox Validation') {
+            parallel {
+                stage('serialnumber-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f serialnumber'
+                    }
+                }
+                stage('ipmi-location-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f ipmi_location'
+                    }
+                }
+                stage('ipmi-interface-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f ipmi_interface'
+                    }
+                }
+                stage('status-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f status'
+                    }
+                }
+                stage('primaryIPv4-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f primaryIPv4'
+                    }
+                }
+                stage('interfaces-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f interfaces'
+                    }
+                }
+                stage('firmware-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f firmware'
+                    }
+                }
+                stage('platform-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f platform'
+                    }
+                }
+                stage('switch-connections-check') {
+                    agent {
+                        label 'maas2netbox-worker'
+                    }
+                    steps {
+                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f switch_connections'
+                    }
+                }
+            }
+        }
+    }
+}

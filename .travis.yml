@@ -1,0 +1,18 @@
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+dist: bionic
+sudo: true
+
+matrix:
+  fast_finish: true
+
+install:
+  - pip install tox-travis
+  - pip install .
+
+script:
+  - tox

@@ -1,0 +1,15 @@
+---
+ipmi:
+  username: user
+  password: userpass
+  dns_zone: mgmt.name.com
+maas:
+  url: https://maas.url
+  api_key: '123AB:CDEF:1234'
+netbox:
+  url: 'https://netbox.url'
+  token: '0123456789ABCDEF'
+  device_ids:
+    - 123
+    - 456
+site: dc_name
