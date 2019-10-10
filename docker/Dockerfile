@@ -15,11 +15,10 @@ RUN yum install -y \
     rm -rf osput_1.3.2.zip OSPUT-1.3.2 && \
     yum clean all
 
-RUN (cd /src/maas2netbox && \
+RUN git init /src/maas2netbox && \
+    (cd /src/maas2netbox && \
         git fetch --tags https://github.com/grnet/maas2netbox.git $BRANCH && \
         git checkout FETCH_HEAD) && \
     pip3 install --no-cache-dir /src/maas2netbox && \
     rm -r /src/maas2netbox && \
     mkdir -p /usr/local/lib/python3.6/site-packages/maas2netbox/user_config
-
-ENTRYPOINT ["maas2netbox"]
