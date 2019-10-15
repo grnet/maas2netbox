@@ -23,6 +23,7 @@ import urllib.request
 
 def get_resource(url):
     req = urllib.request.Request(url)
+    req.add_header('Authorization', 'Token %s' % config.netbox_token)
     res = urllib.request.urlopen(req).read()
     return json.loads(res.decode('utf-8'))
 
