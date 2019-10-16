@@ -73,9 +73,9 @@ def get_node_interfaces(node):
                     for conf_property in iface_property.getchildren():
                         if conf_property.attrib['id'] == 'driver':
                             if conf_property.attrib['value'] == 'igb':
-                                iface['form_factor'] = '1000'
+                                iface['type'] = '1000'
                             elif conf_property.attrib['value'] == 'ixgbe':
-                                iface['form_factor'] = '1150'
+                                iface['type'] = '1150'
             ifaces.append(iface)
     except (KeyError, IndexError, AttributeError, ElementTree.ParseError):
         pass

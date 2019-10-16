@@ -22,7 +22,7 @@ from maas2netbox import validators, updaters, creators
 
 
 def run_validation(args):
-    netbox_nodes = netbox.get_nodes_by_site(config.site_name)
+    netbox_nodes = netbox.get_nodes()
     maas_nodes = maas.get_nodes()
 
     validator = None

@@ -29,7 +29,7 @@ class Creator(object):
 
     @property
     def netbox_nodes(self):
-        nodes = netbox.get_nodes_by_site(config.site_name)
+        nodes = netbox.get_nodes()
         node_dict = {}
         for node in nodes:
             node_dict[node['name'].lower()] = node['id']
@@ -54,20 +54,20 @@ class Creator(object):
 class IPMIInterfaceCreator(Creator):
 
     @staticmethod
-    def get_form_factor_value(form_factor_text):
-        form_factor_value = None
-        form_factors = netbox.get_form_factors()
-        for form_factor in form_factors:
-            if form_factor['label'] == form_factor_text:
-                form_factor_value = form_factor['value']
+    def get_interface_type_value(interface_type_text):
+        interface_type_value = None
+        interface_types = netbox.get_interface_types()
+        for interface_type in interface_types:
+            if interface_type['label'] == interface_type_text:
+                interface_type_value = interface_type['value']
                 break
-        return form_factor_value
+        return interface_type_value
 
     def create(self):
         interface_data = {
             'name': ''.join(self.data['mac_address'].split(':')),
-            'form_factor': self.get_form_factor_value(
-                self.data['form_factor']),
+            'type': self.get_interface_type_value(
+                self.data['type']),
             'device': self.data['node'],
             'enabled': True,
             'mtu': 1500,
@@ -92,17 +92,17 @@ class VirtualInterfacesCreator(Creator):
 
         if iface.vlan and iface.vlan.vid != 0:
             iface_data['mode'] = 200
-            vlan = netbox.get_vlan_id_of_site(config.site_name, iface.vlan.vid)
+            vlan = netbox.get_vlan_id(iface.vlan.vid)
             iface_data['tagged_vlans'] = [vlan]
         else:
             iface_data['mode'] = 100
 
         if iface.type == enum.InterfaceType.BOND:
-            iface_data['form_factor'] = 200
+            iface_data['type'] = 200
         elif iface.type == enum.InterfaceType.VLAN:
-            iface_data['form_factor'] = 32767
+            iface_data['type'] = 32767
         elif iface.type == enum.InterfaceType.BRIDGE:
-            iface_data['form_factor'] = 32767
+            iface_data['type'] = 32767
 
         return iface_data
 
@@ -165,8 +165,7 @@ class VirtualInterfacesCreator(Creator):
                 }
                 if iface.vlan and iface.vlan.vid != 0:
                     iface_data['mode'] = 200
-                    vlan = netbox.get_vlan_id_of_site(
-                        config.site_name, iface.vlan.vid)
+                    vlan = netbox.get_vlan_id(iface.vlan.vid)
                     iface_data['tagged_vlans'] = [vlan]
                 else:
                     iface_data['mode'] = 100
@@ -192,8 +191,7 @@ class VirtualInterfacesCreator(Creator):
             netbox_iface_id = netbox_node_ifaces[iface['name']]
             netbox_iface = netbox.get_node_interface(netbox_iface_id)
             data = {
-                'untagged_vlan': netbox.get_vlan_id_of_site(
-                    config.site_name, iface['vid'])
+                'untagged_vlan': netbox.get_vlan_id(iface['vid'])
             }
             netbox.patch_interface(netbox_iface_id, data)
             if netbox_iface['lag']:

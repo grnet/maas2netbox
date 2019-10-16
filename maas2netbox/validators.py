@@ -95,7 +95,7 @@ class IPMIFieldValidator(Validator):
                         'Node: {} Failure: No IPMI location declared'.format(
                             node['name']))
                     continue
-                ipmi_iface = netbox.get_node_ipmi_interface(node)
+                ipmi_iface = netbox.get_node_ipmi_interface(node['id'])
                 if ipmi_iface:
                     mac_address = ipmi_iface['mac_address']
                     expected = 'https://{}.{}'.format(
@@ -148,7 +148,7 @@ class IPMIInterfaceValidator(Validator):
                         'Node: {} Failure: Could not fetch actual IPMI MAC '
                         'address'.format(node['name']))
                     continue
-                ipmi_interface = netbox.get_node_ipmi_interface(node)
+                ipmi_interface = netbox.get_node_ipmi_interface(node['id'])
                 if not ipmi_interface:
                     logging.error(
                         'Node: {} Failure: No IPMI interface found at NetBox'
@@ -281,7 +281,7 @@ class InterfacesValidator(Validator):
                         logging.error(
                             'Node: {} Missing Interface: {} ({}) ({})'.format(
                                 node['name'], iface['name'],
-                                iface['mac_address'], iface['form_factor']))
+                                iface['mac_address'], iface['type']))
                         missing_ifaces.append(iface)
             except KeyError:
                 pass
@@ -418,8 +418,7 @@ class SwitchConnectionsValidator(Validator):
                     netbox_iface = netbox_ifaces[0]
 
                 if netbox_iface['untagged_vlan']:
-                    expected = netbox.get_vlan_id_of_site(
-                        config.site_name, iface['vid'])
+                    expected = netbox.get_vlan_id(iface['vid'])
                     actual = netbox_iface['untagged_vlan']['id']
                     if expected != actual:
                         logging.error('Node Untagged Vlan Mismatch')
