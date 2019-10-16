@@ -14,12 +14,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from urllib.parse import urlparse
 
 from maas.client.enum import NodeStatus
 
 from maas2netbox import config
-from maas2netbox.utils import ipmi, maas, netbox
+from maas2netbox.utils import ipmi, maas, netbox, utils
 
 
 class Validator(object):
@@ -131,8 +130,8 @@ class IPMIInterfaceValidator(Validator):
         for node in self.netbox_nodes:
             try:
                 if node['custom_fields']['IPMI']:
-                    declared_ipmi_address = urlparse(
-                        node['custom_fields']['IPMI']).netloc
+                    declared_ipmi_address = utils.get_hostname(
+                        node['custom_fields']['IPMI'])
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
@@ -303,8 +302,7 @@ class FirmwareValidator(Validator):
             try:
                 custom_fields = node['custom_fields']
                 if custom_fields['IPMI']:
-                    node_ip = urlparse(
-                        custom_fields['IPMI']).netloc
+                    node_ip = utils.get_hostname(custom_fields['IPMI'])
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
