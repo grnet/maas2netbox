@@ -45,6 +45,13 @@ class Validator(object):
     def check_nodes(self):
         raise NotImplementedError()
 
+    @staticmethod
+    def get_hostname(url):
+        """Get hostname from URL"""
+        parsed = urlparse(url)
+
+        return parsed.scheme and parsed.netloc or parsed.path
+
 
 class SerialNumberValidator(Validator):
 
@@ -131,8 +138,8 @@ class IPMIInterfaceValidator(Validator):
         for node in self.netbox_nodes:
             try:
                 if node['custom_fields']['IPMI']:
-                    declared_ipmi_address = urlparse(
-                        node['custom_fields']['IPMI']).netloc
+                    declared_ipmi_address = self.get_hostname(
+                        node['custom_fields']['IPMI'])
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
@@ -303,8 +310,7 @@ class FirmwareValidator(Validator):
             try:
                 custom_fields = node['custom_fields']
                 if custom_fields['IPMI']:
-                    node_ip = urlparse(
-                        custom_fields['IPMI']).netloc
+                    node_ip = self.get_hostname(custom_fields['IPMI'])
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
