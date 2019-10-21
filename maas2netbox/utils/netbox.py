@@ -13,11 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import json
-import logging
-from urllib.error import URLError
-import urllib.request
-
 import pynetbox
 
 from maas2netbox import config
@@ -29,50 +24,6 @@ def get_api_object():
         token=config.netbox_token
     )
     return nb
-
-
-def patch_resource(resource, url, data):
-    req = urllib.request.Request(url, method='PATCH')
-    req.add_header('Authorization', 'Token %s' % config.netbox_token)
-    req.add_header('Content-Type', 'application/json; charset=utf-8')
-    req.add_header('Accept', 'application/json')
-    jsondata = json.dumps(data)
-    jsondataasbytes = jsondata.encode('utf-8')
-
-    try:
-        urllib.request.urlopen(req, jsondataasbytes).read()
-    except URLError as e:
-        logging.error('Failed to update {}'.format(resource))
-        if hasattr(e, 'reason'):
-            logging.error('Reason: ', e.reason)
-        elif hasattr(e, 'code'):
-            logging.error('Error code: ', e.code)
-        return False
-    else:
-        logging.info('{} updated successfully'.format(resource))
-        return True
-
-
-def create_resource(resource, url, data):
-    req = urllib.request.Request(url, method='POST')
-    req.add_header('Authorization', 'Token %s' % config.netbox_token)
-    req.add_header('Content-Type', 'application/json; charset=utf-8')
-    req.add_header('Accept', 'application/json')
-    jsondata = json.dumps(data)
-    jsondataasbytes = jsondata.encode('utf-8')
-
-    try:
-        ret = urllib.request.urlopen(req, jsondataasbytes).read()
-    except URLError as e:
-        logging.error('Failed to create {}'.format(resource))
-        if hasattr(e, 'reason'):
-            logging.error('Reason: ', e.reason)
-        elif hasattr(e, 'code'):
-            logging.error('Error code: ', e.code)
-        return None
-    else:
-        logging.info('{} created successfully'.format(resource))
-        return json.loads(ret.decode('utf-8'))['id']
 
 
 def get_nodes(nb):
@@ -141,26 +92,23 @@ def get_cable(nb, node_iface, switch_iface):
             return cable
 
 
-def patch_interface(interface_id, data):
-    url = ('{}/dcim/interfaces/{}/'.format(config.netbox_url, interface_id))
-    return patch_resource('Interface', url, data)
+def patch_interface(nb, interface_id, data):
+    iface = nb.dcim.interfaces.get(interface_id)
+    return iface.update(data)
 
 
-def patch_node(node_id, data):
-    url = ('{}/dcim/devices/{}/'.format(config.netbox_url, node_id))
-    return patch_resource('Node', url, data)
+def patch_node(nb, node_id, data):
+    node = nb.dcim.devices.get(node_id)
+    return node.update(data)
 
 
-def create_interface(data):
-    url = ('{}/dcim/interfaces/'.format(config.netbox_url))
-    return create_resource('Interface', url, data)
+def create_interface(nb, data):
+    return nb.dcim.interfaces.create(data).id
 
 
-def create_ip_address(data):
-    url = ('{}/ipam/ip-addresses/'.format(config.netbox_url))
-    return create_resource('IP Address', url, data)
+def create_ip_address(nb, data):
+    return nb.ipam.ip_addresses.create(data).id
 
 
-def create_cable(data):
-    url = ('{}/dcim/cables/'.format(config.netbox_url))
-    return create_resource('Cable', url, data)
+def create_cable(nb, data):
+    return nb.dcim.cables.create(data).id

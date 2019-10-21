@@ -16,7 +16,6 @@
 import argparse
 import logging
 
-from maas2netbox import config
 from maas2netbox.utils import maas, netbox
 from maas2netbox import validators, updaters, creators
 

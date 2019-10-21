@@ -18,7 +18,6 @@ import logging
 
 from maas.client import enum
 
-from maas2netbox import config
 from maas2netbox.utils import maas, netbox
 
 
