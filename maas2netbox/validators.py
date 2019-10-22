@@ -30,17 +30,12 @@ class Validator(object):
 
     @staticmethod
     def sanitized_netbox_nodes(nodes):
-        node_list = []
-        for node in nodes:
-            if node['name'][-2:] not in ['25', '28', '31', '34', '37']:
-                node_list.append(node)
-
-        return node_list
+        return nodes
 
     def sanitized_maas_nodes(self, nodes):
         if nodes:
-            return [node for node in nodes if node.hostname.startswith('lar')
-                    and node.status in [NodeStatus.DEPLOYED, NodeStatus.READY]]
+            return [node for node in nodes if node.status in [
+                NodeStatus.DEPLOYED, NodeStatus.READY]]
 
     def check_nodes(self):
         raise NotImplementedError()
@@ -218,14 +213,13 @@ class PrimaryIPv4Validator(Validator):
             PrimaryIPv4Validator, self).sanitized_maas_nodes(nodes)
         node_dict = {}
         for node in sanitized_nodes:
-            if node.hostname.startswith('lar'):
-                try:
-                    bond = node.interfaces.get_by_name('bond0')
-                    address = bond.links[0].ip_address
-                    if address:
-                        node_dict[node.hostname.upper()] = address
-                except (KeyError, IndexError, AttributeError):
-                    continue
+            try:
+                bond = node.interfaces.get_by_name('bond0')
+                address = bond.links[0].ip_address
+                if address:
+                    node_dict[node.hostname.upper()] = address
+            except (KeyError, IndexError, AttributeError):
+                continue
 
         return node_dict
 

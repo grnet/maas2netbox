@@ -143,8 +143,6 @@ def get_ip_address(address):
     results = get_resource(url)['results']
     if len(results) == 1:
         return results[0]
-    else:
-        return None
 
 
 def get_cable(node_iface, switch_iface):
@@ -156,7 +154,6 @@ def get_cable(node_iface, switch_iface):
             and cable['termination_b_id'] == switch_iface
         ):
             return cable
-    return None
 
 
 def patch_interface(interface_id, data):

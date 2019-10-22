@@ -41,8 +41,7 @@ class Creator(object):
         maas_nodes = maas.get_nodes()
         for node in maas_nodes:
             if (
-                node.hostname.startswith('lar')
-                and node.status in [
+                node.status in [
                     enum.NodeStatus.DEPLOYED, enum.NodeStatus.READY]
             ):
                 nodes.append(node)
@@ -210,11 +209,15 @@ class VirtualInterfacesCreator(Creator):
 
     def create(self):
         for maas_node in self.maas_nodes:
+            try:
+                netbox_node = self.netbox_nodes[maas_node.hostname]
+            except KeyError:
+                continue
+
             logging.info(
                 'Updating Node: {}...'.format(
                     maas_node.hostname.upper()))
 
-            netbox_node = self.netbox_nodes[maas_node.hostname]
             netbox_node_ifaces = self.get_netbox_node_ifaces_dict(netbox_node)
 
             # create interface if not present

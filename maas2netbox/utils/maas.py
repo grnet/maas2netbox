@@ -31,10 +31,9 @@ def get_nodes():
 def get_node_serial(node):
     serial = None
     try:
-        if node.hostname.startswith('lar'):
-            node_details = node.get_details()['lshw']
-            tree = ElementTree.fromstring(node_details)
-            serial = tree.findall("./node[@class='system']/serial")[0].text
+        node_details = node.get_details()['lshw']
+        tree = ElementTree.fromstring(node_details)
+        serial = tree.findall("./node[@class='system']/serial")[0].text
     except (KeyError, AttributeError, IndexError, ElementTree.ParseError):
         pass
 
@@ -57,28 +56,27 @@ def get_interface_ipv4_address(iface):
 def get_node_interfaces(node):
     ifaces = []
     try:
-        if node.hostname.startswith('lar'):
-            node_details = node.get_details()['lshw']
-            tree = ElementTree.fromstring(node_details)
-            ifaces_objects = tree.findall(
-                "node[@class='system']/node[@class='bus']/"
-                "node[@class='bridge']/node[@class='bridge']/"
-                "node[@class='network']")
-            for ifaces_object in ifaces_objects:
-                iface = {}
-                for iface_property in ifaces_object.iter():
-                    if iface_property.tag == 'serial':
-                        iface['mac_address'] = iface_property.text.upper()
-                    elif iface_property.tag == 'logicalname':
-                        iface['name'] = iface_property.text
-                    elif iface_property.tag == 'configuration':
-                        for conf_property in iface_property.getchildren():
-                            if conf_property.attrib['id'] == 'driver':
-                                if conf_property.attrib['value'] == 'igb':
-                                    iface['form_factor'] = '1000'
-                                elif conf_property.attrib['value'] == 'ixgbe':
-                                    iface['form_factor'] = '1150'
-                ifaces.append(iface)
+        node_details = node.get_details()['lshw']
+        tree = ElementTree.fromstring(node_details)
+        ifaces_objects = tree.findall(
+            "node[@class='system']/node[@class='bus']/"
+            "node[@class='bridge']/node[@class='bridge']/"
+            "node[@class='network']")
+        for ifaces_object in ifaces_objects:
+            iface = {}
+            for iface_property in ifaces_object.iter():
+                if iface_property.tag == 'serial':
+                    iface['mac_address'] = iface_property.text.upper()
+                elif iface_property.tag == 'logicalname':
+                    iface['name'] = iface_property.text
+                elif iface_property.tag == 'configuration':
+                    for conf_property in iface_property.getchildren():
+                        if conf_property.attrib['id'] == 'driver':
+                            if conf_property.attrib['value'] == 'igb':
+                                iface['form_factor'] = '1000'
+                            elif conf_property.attrib['value'] == 'ixgbe':
+                                iface['form_factor'] = '1150'
+            ifaces.append(iface)
     except (KeyError, IndexError, AttributeError, ElementTree.ParseError):
         pass
 
