@@ -108,7 +108,7 @@ class VirtualInterfacesCreator(Creator):
         node_ifaces = self.netbox_api.get_node_interfaces(node_id)
         ifaces_dict = {}
         for iface in node_ifaces:
-            ifaces_dict[iface['name']] = iface['id']
+            ifaces_dict[iface.name] = iface.id
         return ifaces_dict
 
     def create_interfaces(self, maas_node, netbox_node, netbox_node_ifaces):

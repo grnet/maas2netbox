@@ -58,7 +58,7 @@ class NetBoxAPI(object):
         ifaces = self.get_node_interfaces(self, node_id)
         ipmi_interface = None
         for iface in ifaces:
-            if iface['mgmt_only']:
+            if iface.mgmt_only:
                 ipmi_interface = iface
                 break
         return ipmi_interface

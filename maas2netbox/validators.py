@@ -69,13 +69,13 @@ class SerialNumberValidator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                maas_serial = self.maas_nodes[node['name'].lower()]
-                if maas_serial != node['serial']:
+                maas_serial = self.maas_nodes[node.name.lower()]
+                if maas_serial != node.serial:
                     logging.debug(
                         'Node: {} NetBox Serial: {} MaaS Serial: {}'
-                        .format(node['name'], node['serial'], maas_serial))
-                    nodes_with_errors[node['id']] = {
-                        'current': node['serial'],
+                        .format(node.name, node.serial, maas_serial))
+                    nodes_with_errors[node.id] = {
+                        'current': node.serial,
                         'expected': maas_serial}
             except KeyError:
                 continue
@@ -91,38 +91,38 @@ class IPMIFieldValidator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                if node['custom_fields']['IPMI']:
-                    declared_ipmi = node['custom_fields']['IPMI']
+                if node.custom_fields['IPMI']:
+                    declared_ipmi = node.custom_fields['IPMI']
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
-                            node['name']))
+                            node.name))
                     continue
                 ipmi_iface = self.netbox_api.get_node_ipmi_interface(
-                    node['id'])
+                    node.id)
                 if ipmi_iface:
-                    mac_address = ipmi_iface['mac_address']
+                    mac_address = ipmi_iface.mac_address
                     expected = 'https://{}.{}'.format(
                         ''.join(mac_address.split(':')), config.ipmi_dns_zone)
                     if mac_address == '00:00:00:00:00:00':
                         logging.error(
                             'Node: {} Failure: Erroneous IPMI MAC address '
-                            'found on NetBox'.format(node['name']))
+                            'found on NetBox'.format(node.name))
                         continue
                     if declared_ipmi != expected:
                         logging.debug(
                             'Node: {} Declared IPMI: {} Expected IPMI: {}'
-                            .format(node['name'], declared_ipmi, expected))
-                        nodes_with_errors[node['id']] = {
+                            .format(node.name, declared_ipmi, expected))
+                        nodes_with_errors[node.id] = {
                             'current': declared_ipmi,
                             'expected': expected}
                 else:
                     logging.error(
                         'Node: {} Declared IPMI: {} Failure: No IPMI '
-                        'interface found'.format(node['name'], declared_ipmi))
+                        'interface found'.format(node.name, declared_ipmi))
             except Exception as e:
                 logging.error(
-                    'An error occurred for node: {}'.format(node['name']), e)
+                    'An error occurred for node: {}'.format(node.name), e)
 
         return nodes_with_errors
 
@@ -136,13 +136,13 @@ class IPMIInterfaceValidator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                if node['custom_fields']['IPMI']:
+                if node.custom_fields['IPMI']:
                     declared_ipmi_address = self.get_hostname(
-                        node['custom_fields']['IPMI'])
+                        node.custom_fields['IPMI'])
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
-                            node['name']))
+                            node.name))
                     continue
                 actual_mac_address = ipmi.get_mac_address(
                     declared_ipmi_address, config.ipmi_username,
@@ -150,28 +150,28 @@ class IPMIInterfaceValidator(Validator):
                 if not actual_mac_address:
                     logging.error(
                         'Node: {} Failure: Could not fetch actual IPMI MAC '
-                        'address'.format(node['name']))
+                        'address'.format(node.name))
                     continue
                 ipmi_interface = self.netbox_api.get_node_ipmi_interface(
-                    node['id'])
+                    node.id)
                 if not ipmi_interface:
                     logging.error(
                         'Node: {} Failure: No IPMI interface found at NetBox'
-                        .format(node['name']))
+                        .format(node.name))
                     continue
-                declared_mac_address = ipmi_interface['mac_address']
+                declared_mac_address = ipmi_interface.mac_address
                 if declared_mac_address != actual_mac_address:
                     logging.debug(
                         'Node: {} Declared MAC Address: {} '
                         'Actual MAC Address: {}'
-                        .format(node['name'], declared_mac_address,
+                        .format(node.name, declared_mac_address,
                                 actual_mac_address))
-                    nodes_with_errors[ipmi_interface['id']] = {
+                    nodes_with_errors[ipmi_interface.id] = {
                         'current': declared_mac_address,
                         'expected': actual_mac_address}
             except Exception as e:
                 logging.error(
-                    'An error occurred for node: {}'.format(node['name']), e)
+                    'An error occurred for node: {}'.format(node.name), e)
 
         return nodes_with_errors
 
@@ -193,16 +193,16 @@ class StatusValidator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                netbox_status = node['status']['label']
-                node_status = self.maas_nodes[node['name']]
+                netbox_status = node.status.label
+                node_status = self.maas_nodes[node.name]
                 translated_status = config.STATUS_DICT[node_status]
 
                 if translated_status and translated_status != netbox_status:
                     logging.debug(
                         'Node: {} Declared Status: {} Actual Status: {}'
-                        .format(node['name'], netbox_status,
+                        .format(node.name, netbox_status,
                                 translated_status))
-                    nodes_with_errors[node['id']] = {
+                    nodes_with_errors[node.id] = {
                         'current': netbox_status,
                         'expected': translated_status}
             except KeyError:
@@ -234,17 +234,17 @@ class PrimaryIPv4Validator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                node_address = None if not node['primary_ip4'] \
-                    else node['primary_ip4']['address'].split('/')[0]
-                if node_address != self.maas_nodes[node['name']]:
+                node_address = None if not node.primary_ip4 \
+                    else node.primary_ip4.address.split('/')[0]
+                if node_address != self.maas_nodes[node.name]:
                     logging.debug(
                         'Node: {} Declared Primary IPv4: {} '
                         'Actual Primary IPv4: {}'
-                        .format(node['name'], node_address,
-                                self.maas_nodes[node['name']]))
-                    nodes_with_errors[node['id']] = {
-                        'current': node['primary_ip4'],
-                        'expected': self.maas_nodes[node['name']]}
+                        .format(node.name, node_address,
+                                self.maas_nodes[node.name]))
+                    nodes_with_errors[node.id] = {
+                        'current': node.primary_ip4,
+                        'expected': self.maas_nodes[node.name]}
             except KeyError:
                 continue
 
@@ -271,27 +271,27 @@ class InterfacesValidator(Validator):
             missing_ifaces = []
             try:
                 netbox_node_ifaces = self.netbox_api.get_node_interfaces(
-                    node['id'])
-                node_ifaces = self.maas_nodes[node['name']]
+                    node.id)
+                node_ifaces = self.maas_nodes[node.name]
                 for iface in node_ifaces:
                     found = False
                     for netbox_iface in netbox_node_ifaces:
                         if (
-                            iface['name'] == netbox_iface['name']
+                            iface['name'] == netbox_iface.name
                             and iface['mac_address']
-                                == netbox_iface['mac_address']):
+                                == netbox_iface.mac_address):
                             found = True
                             break
                     if not found:
                         logging.error(
                             'Node: {} Missing Interface: {} ({}) ({})'.format(
-                                node['name'], iface['name'],
+                                node.name, iface['name'],
                                 iface['mac_address'], iface['type']))
                         missing_ifaces.append(iface)
             except KeyError:
                 pass
             if missing_ifaces:
-                nodes_with_errors[node['id']] = {
+                nodes_with_errors[node.id] = {
                     'current': [],
                     'expected': missing_ifaces
                 }
@@ -307,13 +307,13 @@ class FirmwareValidator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                custom_fields = node['custom_fields']
+                custom_fields = node.custom_fields
                 if custom_fields['IPMI']:
                     node_ip = self.get_hostname(custom_fields['IPMI'])
                 else:
                     logging.error(
                         'Node: {} Failure: No IPMI location declared'.format(
-                            node['name']))
+                            node.name))
                     continue
                 firmware_output = ipmi.get_firmware_versions(
                     node_ip, config.ipmi_username, config.ipmi_password)
@@ -323,11 +323,11 @@ class FirmwareValidator(Validator):
                 for firmware, version in firmware_versions.items():
                     if custom_fields[firmware] != version:
                         if not found_errors:
-                            nodes_with_errors[node['id']] = {
+                            nodes_with_errors[node.id] = {
                                 'current': {},
                                 'expected': {}
                             }
-                            logging.debug('Node: {}'.format(node['name']))
+                            logging.debug('Node: {}'.format(node.name))
                             found_errors = True
 
                         logging.debug(
@@ -335,13 +335,13 @@ class FirmwareValidator(Validator):
                             'Actual Version: {}'
                             .format(
                                 firmware, custom_fields[firmware], version))
-                        nodes_with_errors[node['id']]['current'][firmware] = \
+                        nodes_with_errors[node.id]['current'][firmware] = \
                             custom_fields[firmware]
-                        nodes_with_errors[node['id']]['expected'][firmware] = \
+                        nodes_with_errors[node.id]['expected'][firmware] = \
                             version
             except Exception as e:
                 logging.error(
-                    'An error occurred for node: {}'.format(node['name']), e)
+                    'An error occurred for node: {}'.format(node.name), e)
 
         return nodes_with_errors
 
@@ -368,17 +368,17 @@ class PlatformValidator(Validator):
 
         for node in self.netbox_nodes:
             try:
-                declared_platform = node.get('platform')
+                declared_platform = node.platform
                 if declared_platform:
-                    declared_platform = declared_platform['slug']
-                if declared_platform != self.maas_nodes[node['name']]:
+                    declared_platform = declared_platform.slug
+                if declared_platform != self.maas_nodes[node.name]:
                     logging.debug(
                         'Node: {} Declared Platform: {} Expected Platform: {}'
-                        .format(node['name'], declared_platform,
-                                self.maas_nodes[node['name']]))
-                    nodes_with_errors[node['id']] = {
+                        .format(node.name, declared_platform,
+                                self.maas_nodes[node.name]))
+                    nodes_with_errors[node.id] = {
                         'current': declared_platform,
-                        'expected': self.maas_nodes[node['name']]
+                        'expected': self.maas_nodes[node.name]
                     }
             except KeyError:
                 continue
@@ -401,20 +401,20 @@ class SwitchConnectionsValidator(Validator):
         logging.debug('Check Switch Connections declared at NetBox')
         for node in self.netbox_nodes:
             try:
-                maas_node = self.maas_nodes[node['name']]
+                maas_node = self.maas_nodes[node.name]
             except KeyError:
                 continue
 
-            logging.debug('Node: {}'.format(node['name']))
+            logging.debug('Node: {}'.format(node.name))
 
             ifaces_details = maas.get_switch_connection_details(maas_node)
             for iface in ifaces_details:
 
                 netbox_ifaces = self.netbox_api.get_node_interfaces(
-                    node['id'], iface['name'])
+                    node.id, iface['name'])
                 if len(netbox_ifaces) == 0:
                     logging.error('Expected to find: {} {}'.format(
-                        node['name'], iface['name']))
+                        node.name, iface['name']))
                     continue
                 elif len(netbox_ifaces) != 1:
                     logging.error('Interface problem')
@@ -422,17 +422,17 @@ class SwitchConnectionsValidator(Validator):
                 else:
                     netbox_iface = netbox_ifaces[0]
 
-                if netbox_iface['untagged_vlan']:
+                if netbox_iface.untagged_vlan:
                     expected = self.netbox_api.get_vlan_id(iface['vid'])
-                    actual = netbox_iface['untagged_vlan']['id']
+                    actual = netbox_iface.untagged_vlan.id
                     if expected != actual:
                         logging.error('Node Untagged Vlan Mismatch')
                         continue
 
-                    if netbox_iface['lag']:
+                    if netbox_iface.lag:
                         netbox_lag_iface = self.netbox_api.get_node_interface(
-                            netbox_iface['lag']['id'])
-                        if expected != netbox_lag_iface['untagged_vlan']['id']:
+                            netbox_iface.lag.id)
+                        if expected != netbox_lag_iface.untagged_vlan.id:
                             logging.error('Node LAG Untagged Vlan Mismatch')
                             continue
 
@@ -442,7 +442,7 @@ class SwitchConnectionsValidator(Validator):
                     continue
 
                 switch_ports = self.netbox_api.get_node_interfaces(
-                    switch['id'], iface['switch_port'])
+                    switch.id, iface['switch_port'])
                 if len(switch_ports) != 1:
                     logging.error('Switch port problem')
                     continue
@@ -450,12 +450,12 @@ class SwitchConnectionsValidator(Validator):
                     switch_port = switch_ports[0]
 
                 cable = self.netbox_api.get_cable(
-                    netbox_iface['id'], switch_port['id'])
+                    netbox_iface.id, switch_port.id)
                 if not cable:
                     logging.error('Cable is missing')
                     continue
 
-                if iface['cable_color'] != cable['color']:
+                if iface['cable_color'] != cable.color:
                     logging.error('Cable color mismatch')
 
 
@@ -465,4 +465,4 @@ class ExperimentalValidator(Validator):
         logging.debug('Experimental Validator - Use it at will')
         for node in self.netbox_nodes:
             logging.debug(
-                'Node: {} Comments: {}'.format(node['name'], node['comments']))
+                'Node: {} Comments: {}'.format(node.name, node.comments))

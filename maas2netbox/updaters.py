@@ -23,7 +23,7 @@ class Updater(object):
 
     def get_node_custom_fields(self, node_id):
         node = self.netbox_api.get_node(node_id)
-        return node['custom_fields']
+        return node.custom_fields
 
     def update_nodes(self):
         raise NotImplementedError()
@@ -106,8 +106,8 @@ class PlatformUpdater(Updater):
         platform_id = None
         platforms = self.netbox_api.get_node_platforms()
         for platform in platforms:
-            if platform['slug'] == value:
-                platform_id = platform['id']
+            if platform.slug == value:
+                platform_id = platform.id
                 break
         return platform_id
 
