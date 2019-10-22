@@ -18,97 +18,84 @@ import pynetbox
 from maas2netbox import config
 
 
-def get_api_object():
-    nb = pynetbox.api(
-        config.netbox_url,
-        token=config.netbox_token
-    )
-    return nb
+class NetBoxAPI(object):
+    def __init__(self):
+        self.api = pynetbox.api(
+            config.netbox_url,
+            token=config.netbox_token
+        )
 
+    def get_nodes(self):
+        return self.api.dcim.devices.filter(
+            site=config.site_name, device_type_id=config.netbox_device_ids)
 
-def get_nodes(nb):
-    return nb.dcim.devices.filter(
-        site=config.site_name, device_type_id=config.netbox_device_ids)
+    def get_node_by_name(self, name):
+        return self.api.dcim.devices.get(name=name)
 
+    def get_node(self, node_id):
+        return self.api.dcim.devices.get(node_id)
 
-def get_node_by_name(nb, name):
-    return nb.dcim.devices.get(name=name)
+    def get_node_interface(self, interface_id):
+        return self.api.dcim.interfaces.get(name=interface_id)
 
+    def get_node_interfaces(self, node_id, name=None):
+        if name:
+            return self.api.dcim.interfaces.filter(
+                device_id=node_id, name=name)
+        else:
+            return self.api.dcim.interfaces.filter(device_id=node_id)
 
-def get_node(nb, node_id):
-    return nb.dcim.devices.get(node_id)
+    def get_node_platforms(self):
+        return self.api.dcim.platforms.all()
 
+    def get_node_statuses(self):
+        return self.api.dcim.choices()['device:status']
 
-def get_node_interface(nb, interface_id):
-    return nb.dcim.interfaces.get(name=interface_id)
+    def get_interface_types(self):
+        return self.api.dcim.choices()['interface:type']
 
+    def get_node_ipmi_interface(self, node_id):
+        ifaces = self.get_node_interfaces(self, node_id)
+        ipmi_interface = None
+        for iface in ifaces:
+            if iface['mgmt_only']:
+                ipmi_interface = iface
+                break
+        return ipmi_interface
 
-def get_node_interfaces(nb, node_id, name=None):
-    if name:
-        return nb.dcim.interfaces.filter(device_id=node_id, name=name)
-    else:
-        return nb.dcim.interfaces.filter(device_id=node_id)
+    def get_vlan_id(self, vid):
+        return self.api.ipam.vlans.filter(site=config.site_name, vid=vid)
 
+    def get_ip_address(self, address):
+        results = self.api.ipam.ip_addresses.filter(address=address)
+        if len(results) == 1:
+            return results[0]
+        else:
+            return None
 
-def get_node_platforms(nb):
-    return nb.dcim.platforms.all()
+    def get_cable(self, node_iface, switch_iface):
+        cables = self.api.dcim.cables.filter(site=config.site_name)
+        for cable in cables:
+            if (
+                cable['termination_a_id'] == node_iface
+                and cable['termination_b_id'] == switch_iface
+            ):
+                return cable
+        return None
 
+    def patch_interface(self, interface_id, data):
+        iface = self.api.dcim.interfaces.get(interface_id)
+        return iface.update(data)
 
-def get_node_statuses(nb):
-    return nb.dcim.choices()['device:status']
+    def patch_node(self, node_id, data):
+        node = self.api.dcim.devices.get(node_id)
+        return node.update(data)
 
+    def create_interface(self, data):
+        return self.api.dcim.interfaces.create(data).id
 
-def get_interface_types(nb):
-    return nb.dcim.choices()['interface:type']
+    def create_ip_address(self, data):
+        return self.api.ipam.ip_addresses.create(data).id
 
-
-def get_node_ipmi_interface(nb, node_id):
-    ifaces = get_node_interfaces(nb, node_id)
-    ipmi_interface = None
-    for iface in ifaces:
-        if iface['mgmt_only']:
-            ipmi_interface = iface
-            break
-    return ipmi_interface
-
-
-def get_vlan_id(nb, vid):
-    return nb.ipam.vlans.filter(site=config.site_name, vid=vid)
-
-
-def get_ip_address(nb, address):
-    results = nb.ipam.ip_addresses.filter(address=address)
-    if len(results) == 1:
-        return results[0]
-
-
-def get_cable(nb, node_iface, switch_iface):
-    cables = nb.dcim.cables.filter(site=config.site_name)
-    for cable in cables:
-        if (
-            cable['termination_a_id'] == node_iface
-            and cable['termination_b_id'] == switch_iface
-        ):
-            return cable
-
-
-def patch_interface(nb, interface_id, data):
-    iface = nb.dcim.interfaces.get(interface_id)
-    return iface.update(data)
-
-
-def patch_node(nb, node_id, data):
-    node = nb.dcim.devices.get(node_id)
-    return node.update(data)
-
-
-def create_interface(nb, data):
-    return nb.dcim.interfaces.create(data).id
-
-
-def create_ip_address(nb, data):
-    return nb.ipam.ip_addresses.create(data).id
-
-
-def create_cable(nb, data):
-    return nb.dcim.cables.create(data).id
+    def create_cable(self, data):
+        return self.api.dcim.cables.create(data).id

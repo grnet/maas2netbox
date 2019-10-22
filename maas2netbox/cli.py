@@ -16,36 +16,31 @@
 import argparse
 import logging
 
-from maas2netbox.utils import maas, netbox
 from maas2netbox import validators, updaters, creators
 
 
 def run_validation(args):
-    netbox_nodes = netbox.get_nodes()
-    maas_nodes = maas.get_nodes()
-
     validator = None
     if args.field == 'serialnumber':
-        validator = validators.SerialNumberValidator(netbox_nodes, maas_nodes)
+        validator = validators.SerialNumberValidator(use_maas=True)
     elif args.field == 'ipmi_location':
-        validator = validators.IPMIFieldValidator(netbox_nodes, None)
+        validator = validators.IPMIFieldValidator()
     elif args.field == 'ipmi_interface':
-        validator = validators.IPMIInterfaceValidator(netbox_nodes, None)
+        validator = validators.IPMIInterfaceValidator()
     elif args.field == 'status':
-        validator = validators.StatusValidator(netbox_nodes, maas_nodes)
+        validator = validators.StatusValidator(use_maas=True)
     elif args.field == 'primaryIPv4':
-        validator = validators.PrimaryIPv4Validator(netbox_nodes, maas_nodes)
+        validator = validators.PrimaryIPv4Validator(use_maas=True)
     elif args.field == 'interfaces':
-        validator = validators.InterfacesValidator(netbox_nodes, maas_nodes)
+        validator = validators.InterfacesValidator(use_maas=True)
     elif args.field == 'firmware':
-        validator = validators.FirmwareValidator(netbox_nodes, None)
+        validator = validators.FirmwareValidator()
     elif args.field == 'platform':
-        validator = validators.PlatformValidator(netbox_nodes, maas_nodes)
+        validator = validators.PlatformValidator(use_maas=True)
     elif args.field == 'switch_connections':
-        validator = validators.SwitchConnectionsValidator(
-            netbox_nodes, maas_nodes)
+        validator = validators.SwitchConnectionsValidator(use_maas=True)
     elif args.field == 'experimental':
-        validator = validators.ExperimentalValidator(netbox_nodes, maas_nodes)
+        validator = validators.ExperimentalValidator(use_maas=True)
 
     return validator.check_nodes()
 
