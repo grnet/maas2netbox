@@ -11,7 +11,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f serialnumber'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f serialnumber'
                     }
                 }
                 stage('ipmi-location-check') {
@@ -19,7 +19,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f ipmi_location'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f ipmi_location'
                     }
                 }
                 stage('ipmi-interface-check') {
@@ -27,7 +27,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f ipmi_interface'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f ipmi_interface'
                     }
                 }
                 stage('status-check') {
@@ -35,7 +35,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f status'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f status'
                     }
                 }
                 stage('primaryIPv4-check') {
@@ -43,7 +43,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f primaryIPv4'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f primaryIPv4'
                     }
                 }
                 stage('interfaces-check') {
@@ -51,7 +51,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f interfaces'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f interfaces'
                     }
                 }
                 stage('firmware-check') {
@@ -59,7 +59,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f firmware'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f firmware'
                     }
                 }
                 stage('platform-check') {
@@ -67,7 +67,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f platform'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f platform'
                     }
                 }
                 stage('switch-connections-check') {
@@ -75,7 +75,7 @@ pipeline {
                         label 'maas2netbox-worker'
                     }
                     steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate -s louros --log DEBUG -f switch_connections'
+                        sh 'docker exec maas2netbox maas2netbox -c validate --log DEBUG -f switch_connections'
                     }
                 }
             }
