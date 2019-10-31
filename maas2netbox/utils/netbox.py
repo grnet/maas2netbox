@@ -77,8 +77,8 @@ class NetBoxAPI(object):
         cables = self.api.dcim.cables.filter(site=config.site_name)
         for cable in cables:
             if (
-                cable['termination_a_id'] == node_iface
-                and cable['termination_b_id'] == switch_iface
+                cable.termination_a_id == node_iface
+                and cable.termination_b_id == switch_iface
             ):
                 return cable
         return None
