@@ -41,7 +41,7 @@ def get_firmware_versions(ipv4, username, password):
     cmd = [
         "/bin/bash",
         "-c",
-        "/opt/lenovo/osput"
+        "/opt/lenovo/osput/osput"
         "-c getServerInfo -u {} -p {} -H {}"
         .format(username, password, ipv4)]
 
