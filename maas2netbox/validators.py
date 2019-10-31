@@ -64,14 +64,14 @@ class SerialNumberValidator(Validator):
         return node_dict
 
     def check_nodes(self):
-        logging.debug('Check Serial Number declared at NetBox')
+        logging.info('Check Serial Number declared at NetBox')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
             try:
                 maas_serial = self.maas_nodes[node.name.lower()]
                 if maas_serial != node.serial:
-                    logging.debug(
+                    logging.info(
                         'Node: {} NetBox Serial: {} MaaS Serial: {}'
                         .format(node.name, node.serial, maas_serial))
                     nodes_with_errors[node.id] = {
@@ -86,7 +86,7 @@ class SerialNumberValidator(Validator):
 class IPMIFieldValidator(Validator):
 
     def check_nodes(self):
-        logging.debug('Check IPMI web address declared at NetBox')
+        logging.info('Check IPMI web address declared at NetBox')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
@@ -110,7 +110,7 @@ class IPMIFieldValidator(Validator):
                             'found on NetBox'.format(node.name))
                         continue
                     if declared_ipmi != expected:
-                        logging.debug(
+                        logging.info(
                             'Node: {} Declared IPMI: {} Expected IPMI: {}'
                             .format(node.name, declared_ipmi, expected))
                         nodes_with_errors[node.id] = {
@@ -130,7 +130,7 @@ class IPMIFieldValidator(Validator):
 class IPMIInterfaceValidator(Validator):
 
     def check_nodes(self):
-        logging.debug(
+        logging.info(
             'Check MAC Address of the IPMI interface declared at NetBox')
         nodes_with_errors = {}
 
@@ -161,7 +161,7 @@ class IPMIInterfaceValidator(Validator):
                     continue
                 declared_mac_address = ipmi_interface.mac_address
                 if declared_mac_address != actual_mac_address:
-                    logging.debug(
+                    logging.info(
                         'Node: {} Declared MAC Address: {} '
                         'Actual MAC Address: {}'
                         .format(node.name, declared_mac_address,
@@ -188,7 +188,7 @@ class StatusValidator(Validator):
         return node_dict
 
     def check_nodes(self):
-        logging.debug('Check inconsistency between NetBox and MaaS status')
+        logging.info('Check inconsistency between NetBox and MaaS status')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
@@ -198,7 +198,7 @@ class StatusValidator(Validator):
                 translated_status = config.STATUS_DICT[node_status]
 
                 if translated_status and translated_status != netbox_status:
-                    logging.debug(
+                    logging.info(
                         'Node: {} Declared Status: {} Actual Status: {}'
                         .format(node.name, netbox_status,
                                 translated_status))
@@ -229,7 +229,7 @@ class PrimaryIPv4Validator(Validator):
         return node_dict
 
     def check_nodes(self):
-        logging.debug('Check Primary IPv4 Address declared at NetBox')
+        logging.info('Check Primary IPv4 Address declared at NetBox')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
@@ -237,7 +237,7 @@ class PrimaryIPv4Validator(Validator):
                 node_address = None if not node.primary_ip4 \
                     else node.primary_ip4.address.split('/')[0]
                 if node_address != self.maas_nodes[node.name]:
-                    logging.debug(
+                    logging.info(
                         'Node: {} Declared Primary IPv4: {} '
                         'Actual Primary IPv4: {}'
                         .format(node.name, node_address,
@@ -264,7 +264,7 @@ class InterfacesValidator(Validator):
         return node_dict
 
     def check_nodes(self):
-        logging.debug('Get actual interfaces of node to be declared in NetBox')
+        logging.info('Get actual interfaces of node to be declared in NetBox')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
@@ -302,7 +302,7 @@ class InterfacesValidator(Validator):
 class FirmwareValidator(Validator):
 
     def check_nodes(self):
-        logging.debug('Check Firmware Versions declared at NetBox')
+        logging.info('Check Firmware Versions declared at NetBox')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
@@ -327,10 +327,10 @@ class FirmwareValidator(Validator):
                                 'current': {},
                                 'expected': {}
                             }
-                            logging.debug('Node: {}'.format(node.name))
+                            logging.info('Node: {}'.format(node.name))
                             found_errors = True
 
-                        logging.debug(
+                        logging.info(
                             'Firmware: {} Declared Version: {} '
                             'Actual Version: {}'
                             .format(
@@ -363,7 +363,7 @@ class PlatformValidator(Validator):
         return node_dict
 
     def check_nodes(self):
-        logging.debug('Check Platform declared at NetBox')
+        logging.info('Check Platform declared at NetBox')
         nodes_with_errors = {}
 
         for node in self.netbox_nodes:
@@ -372,7 +372,7 @@ class PlatformValidator(Validator):
                 if declared_platform:
                     declared_platform = declared_platform.slug
                 if declared_platform != self.maas_nodes[node.name]:
-                    logging.debug(
+                    logging.info(
                         'Node: {} Declared Platform: {} Expected Platform: {}'
                         .format(node.name, declared_platform,
                                 self.maas_nodes[node.name]))
@@ -398,14 +398,14 @@ class SwitchConnectionsValidator(Validator):
         return node_dict
 
     def check_nodes(self):
-        logging.debug('Check Switch Connections declared at NetBox')
+        logging.info('Check Switch Connections declared at NetBox')
         for node in self.netbox_nodes:
             try:
                 maas_node = self.maas_nodes[node.name]
             except KeyError:
                 continue
 
-            logging.debug('Node: {}'.format(node.name))
+            logging.info('Node: {}'.format(node.name))
 
             ifaces_details = maas.get_switch_connection_details(maas_node)
             for iface in ifaces_details:
@@ -462,7 +462,7 @@ class SwitchConnectionsValidator(Validator):
 class ExperimentalValidator(Validator):
 
     def check_nodes(self):
-        logging.debug('Experimental Validator - Use it at will')
+        logging.info('Experimental Validator - Use it at will')
         for node in self.netbox_nodes:
-            logging.debug(
+            logging.info(
                 'Node: {} Comments: {}'.format(node.name, node.comments))

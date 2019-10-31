@@ -38,7 +38,7 @@ class NetBoxAPI(object):
     def get_node_interface(self, interface_id):
         return self.api.dcim.interfaces.get(name=interface_id)
 
-    def get_node_interfaces(self, node_id, name=None):
+    def get_node_interfaces(self, node_id, name=''):
         if name:
             return self.api.dcim.interfaces.filter(
                 device_id=node_id, name=name)
@@ -55,7 +55,7 @@ class NetBoxAPI(object):
         return self.api.dcim.choices()['interface:type']
 
     def get_node_ipmi_interface(self, node_id):
-        ifaces = self.get_node_interfaces(self, node_id)
+        ifaces = self.get_node_interfaces(node_id)
         ipmi_interface = None
         for iface in ifaces:
             if iface.mgmt_only:
