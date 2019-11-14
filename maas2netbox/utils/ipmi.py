@@ -64,10 +64,11 @@ def parse_firmware_versions(output):
     except IndexError:
         return {}
 
-    firmware_assets = [firmware_info[x:x + 5] for x in
-                       range(0, len(firmware_info), 6) if any(
-            firmware in firmware_info[x] for firmware in
-            ['BIOS', 'PSU', 'System Manager'])]
+    firmware_assets = [
+        firmware_info[x:x + 5] for x in range(
+            0, len(firmware_info), 6) if any(
+                firmware in firmware_info[x] for firmware in [
+                    'BIOS', 'PSU', 'System Manager'])]
     firmware_dict = [dict(map(lambda x: x.split(': '), y)) for y in
                      firmware_assets]
     bios = next(i for i in firmware_dict if i['Device type'] == 'BIOS' and i[
