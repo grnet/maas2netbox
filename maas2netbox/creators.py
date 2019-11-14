@@ -189,17 +189,17 @@ class VirtualInterfacesCreator(Creator):
                 'untagged_vlan': self.netbox_api.get_vlan_id(iface['vid'])
             }
             self.netbox_api.patch_interface(netbox_iface_id, data)
-            if netbox_iface['lag']:
+            if netbox_iface.lag:
                 self.netbox_api.patch_interface(
-                    netbox_iface['lag']['id'], data)
+                    netbox_iface.lag.id, data)
 
             switch = self.netbox_api.get_node_by_name(iface['switch_name'])
             switch_port = self.netbox_api.get_node_interfaces(
-                switch['id'], iface['switch_port'])[0]
+                switch.id, iface['switch_port'])[0]
             if not self.netbox_api.get_cable(
-                    netbox_iface_id, switch_port['id']):
+                    netbox_iface_id, switch_port.id):
                 cable_data = self.get_cable_data(
-                    netbox_iface_id, switch_port['id'], iface['cable_color'])
+                    netbox_iface_id, switch_port.id, iface['cable_color'])
                 self.netbox_api.create_cable(cable_data)
 
     def create(self):

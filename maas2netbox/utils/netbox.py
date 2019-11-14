@@ -36,7 +36,7 @@ class NetBoxAPI(object):
         return self.api.dcim.devices.get(node_id)
 
     def get_node_interface(self, interface_id):
-        return self.api.dcim.interfaces.get(name=interface_id)
+        return self.api.dcim.interfaces.get(interface_id)
 
     def get_node_interfaces(self, node_id, name=''):
         if name:
@@ -64,7 +64,7 @@ class NetBoxAPI(object):
         return ipmi_interface
 
     def get_vlan_id(self, vid):
-        return self.api.ipam.vlans.filter(site=config.site_name, vid=vid)
+        return self.api.ipam.vlans.get(site=config.site_name, vid=vid).id
 
     def get_ip_address(self, address):
         results = self.api.ipam.ip_addresses.filter(address=address)
@@ -92,10 +92,10 @@ class NetBoxAPI(object):
         return node.update(data)
 
     def create_interface(self, data):
-        return self.api.dcim.interfaces.create(data).id
+        return self.api.dcim.interfaces.create(**data).id
 
     def create_ip_address(self, data):
-        return self.api.ipam.ip_addresses.create(data).id
+        return self.api.ipam.ip_addresses.create(**data).id
 
     def create_cable(self, data):
-        return self.api.dcim.cables.create(data).id
+        return self.api.dcim.cables.create(**data).id
