@@ -319,6 +319,11 @@ class FirmwareValidator(Validator):
                     node_ip, config.ipmi_username, config.ipmi_password)
                 firmware_versions = ipmi.parse_firmware_versions(
                     firmware_output)
+                if not firmware_versions:
+                    logging.error(
+                        'Node: {} Failure: Cannot communicate with node'
+                        .format(node.name))
+                    continue
                 found_errors = False
                 for firmware, version in firmware_versions.items():
                     if custom_fields[firmware] != version:

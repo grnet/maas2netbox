@@ -58,23 +58,31 @@ def get_firmware_versions(ipv4, username, password):
 
 
 def parse_firmware_versions(output):
-    firmware_versions = {}
-    keeping_lines = [
-        line.split(': ')[1] for line in output.decode().split('\n')
-        if (
-            line.startswith('Device type:')
-            or line.startswith('Current version:'))]
-    it = iter(keeping_lines)
-    for x in it:
-        version = next(it)
-        if x == 'BIOS':
-            firmware_versions[x] = version
-        elif x == 'PSU':
-            if x in firmware_versions and \
-                    firmware_versions[x] != 'Not available':
-                continue
-            firmware_versions[x] = version
-        elif x == 'System Manager':
-            firmware_versions['TSM'] = version
+    try:
+        firmware_info = output.decode().split(
+            'Server components:\n\n')[1].split('\n')
+    except IndexError:
+        return {}
+
+    firmware_assets = [firmware_info[x:x + 5] for x in
+                       range(0, len(firmware_info), 6) if any(
+            firmware in firmware_info[x] for firmware in
+            ['BIOS', 'PSU', 'System Manager'])]
+    firmware_dict = [dict(map(lambda x: x.split(': '), y)) for y in
+                     firmware_assets]
+    bios = next(i for i in firmware_dict if i['Device type'] == 'BIOS' and i[
+        'Device status'] == 'Device present')
+    tsm = next(i for i in firmware_dict if
+               i['Device type'] == 'System Manager' and i[
+                   'Device status'] == 'Device present')
+    psus = [i for i in firmware_dict if i['Device type'] == 'PSU']
+    psu_value = ', '.join(['{}/{}: {}'.format(x['Slot number'], x['Device id'],
+                                              x['Current version']) for x in
+                           psus if x['Device status'] == 'Device present'])
+    firmware_versions = {
+        'BIOS': bios['Current version'],
+        'TSM': tsm['Current version'],
+        'PSU': psu_value
+    }
 
     return firmware_versions

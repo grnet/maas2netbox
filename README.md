@@ -103,10 +103,3 @@ versions of MaaS2Netbox:
 
 * In order to check cabling of a node with a network switch, all switch
 ports must be declared beforehand to NetBox
-* Lenovo servers can have different types of Power Supply Units
-installed. At the moment this information cannot be recorded to the
-`PSU` NetBox custom field.
-* Lenovo Nodes have two Power Supply Units installed. If, for any
-reason, a firmware update fails to update both then their PSU firmware
-version is different. The current implementation of MaaS2Netbox fetches
-the first firmware found.
