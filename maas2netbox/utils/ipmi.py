@@ -58,6 +58,45 @@ def get_firmware_versions(ipv4, username, password):
 
 
 def parse_firmware_versions(output):
+    """ Returns a dictionary with the firmware version of BIOS, TSM and PSU
+    hardware components of a Lenovo Server
+
+    Sample OSCLI Output:
+    ...
+    Server components:
+
+    Device type: BIOS
+    Device id: LG_BIOS_000
+    Slot number: 0
+    Device status: Device present
+    Current version: 4.86.0
+
+    Device type: System Manager
+    Device id: LG_TSM
+    Slot number: 0
+    Device status: Device present
+    Current version: 4.83.396
+
+    Device type: PSU
+    Device id: PS_0201
+    Slot number: 1
+    Device status: Device present
+    Current version: 3.31.0
+
+    Device type: PSU
+    Device id: PS_0201
+    Slot number: 2
+    Device status: Device present
+    Current version: 3.31.0
+
+    Expected return value:
+    {
+        'BIOS': '4.86.0',
+        'TSM': '4.83.396',
+        'PSU': '1/PS_0201: 3.31.0, 2/PS_0201: 3.31.0',
+    }
+
+    """
     try:
         firmware_info = output.decode().split(
             'Server components:\n\n')[1].split('\n')
