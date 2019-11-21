@@ -12,6 +12,7 @@ matrix:
 
 install:
   - pip install tox-travis
+  - pip install -r test-requirements.txt
   - pip install .
 
 script:
