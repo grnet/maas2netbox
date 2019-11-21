@@ -45,6 +45,5 @@ venv.bak/
 
 # Testing Files
 .coverage
-coverage.xml
 
 docker/config.yml
