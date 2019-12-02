@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/grnet/maas2netbox.svg?branch=master)](https://travis-ci.com/grnet/maas2netbox)
+[![codecov](https://codecov.io/gh/grnet/maas2netbox/branch/master/graph/badge.svg)](https://codecov.io/gh/grnet/maas2netbox)
+
 # MaaS2Netbox
 MaaS2Netbox is a project which aims to update an existing
 NetBox database of a Node inventory with information gathered by MaaS
