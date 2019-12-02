@@ -1,0 +1,7 @@
+[run]
+omit = maas2netbox/tests/*
+
+[report]
+exclude_lines =
+    pass
+    main()

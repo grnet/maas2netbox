@@ -43,4 +43,7 @@ venv.bak/
 # IDEs
 .idea
 
+# Testing Files
+.coverage
+
 docker/config.yml

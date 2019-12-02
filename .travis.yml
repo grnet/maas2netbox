@@ -12,7 +12,12 @@ matrix:
 
 install:
   - pip install tox-travis
+  - pip install -r test-requirements.txt
   - pip install .
 
 script:
+  - tox -e pep8
   - tox
+
+after_success:
+  - codecov
