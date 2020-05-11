@@ -54,14 +54,6 @@ pipeline {
                         sh 'docker exec maas2netbox maas2netbox -c validate --log INFO -f interfaces'
                     }
                 }
-                stage('firmware-check') {
-                    agent {
-                        label 'maas2netbox-worker'
-                    }
-                    steps {
-                        sh 'docker exec maas2netbox maas2netbox -c validate --log INFO -f firmware'
-                    }
-                }
                 stage('platform-check') {
                     agent {
                         label 'maas2netbox-worker'
