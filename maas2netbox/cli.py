@@ -33,8 +33,6 @@ def run_validation(args):
         validator = validators.PrimaryIPv4Validator(use_maas=True)
     elif args.field == 'interfaces':
         validator = validators.InterfacesValidator(use_maas=True)
-    elif args.field == 'firmware':
-        validator = validators.FirmwareValidator()
     elif args.field == 'platform':
         validator = validators.PlatformValidator(use_maas=True)
     elif args.field == 'switch_connections':
@@ -61,8 +59,6 @@ def run_updates(args):
         updater = updaters.PrimaryIPv4Updater(nodes_with_errors)
     elif args.field == 'interfaces':
         updater = updaters.InterfacesUpdater(nodes_with_errors)
-    elif args.field == 'firmware':
-        updater = updaters.FirmwareUpdater(nodes_with_errors)
     elif args.field == 'platform':
         updater = updaters.PlatformUpdater(nodes_with_errors)
     elif args.field == 'experimental':
@@ -95,9 +91,9 @@ def main():
         choices=['validate', 'update', 'create'], required=True)
     required_args.add_argument(
         '-f', dest='field', help='Choose field',
-        choices=['serialnumber', 'ipmi_location', 'ipmi_interface',
-                 'status', 'primaryIPv4', 'interfaces', 'firmware',
-                 'platform', 'switch_connections', 'experimental'],
+        choices=['serialnumber', 'ipmi_location', 'ipmi_interface', 'status',
+                 'primaryIPv4', 'interfaces', 'platform', 'switch_connections',
+                 'experimental'],
         required=True)
     parser.add_argument(
         '--log', dest='loglevel',

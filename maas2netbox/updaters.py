@@ -89,17 +89,6 @@ class InterfacesUpdater(Updater):
                 self.netbox_api.create_interface(interface)
 
 
-class FirmwareUpdater(Updater):
-
-    def update_nodes(self):
-        for node_id, value in self.nodes_updates.items():
-            custom_fields = self.get_node_custom_fields(node_id)
-            for firmware, version in value['expected'].items():
-                custom_fields[firmware] = version
-            self.netbox_api.patch_node(
-                node_id, {'custom_fields': custom_fields})
-
-
 class PlatformUpdater(Updater):
 
     def get_platform_id(self, value):

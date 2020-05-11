@@ -70,12 +70,12 @@ container:
 Usage: `maas2netbox [-h] -c COMMAND -f FIELD [--log LOG_LEVEL]
 [--data DATA]`
 
-| Argument             | Valid Options                                                                                                                                       |
-| --------             | -------------                                                                                                                                       |
-| `COMMAND`            | `validate`, `update`, `create`                                                                                                                      |
-|`FIELD`               | `serialnumber`, `ipmi_location`, `ipmi_interface`, `status,primaryIPv4`, `interfaces`, `firmware`, `platform`, `switch_connections`, `experimental` |
-|`LOG_LEVEL` (optional)| `CRITICAL`, `FATAL`, `ERROR`, `WARN`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`                                                                          |
-|`DATA` (optional)     | is a valid json dictionary                                                                                                                          |
+| Argument               | Valid Options                                                                                                                              |
+| --------               | -------------                                                                                                                              |
+| `COMMAND`              | `validate`, `update`, `create`                                                                                                             |
+| `FIELD`                | `serialnumber`, `ipmi_location`, `ipmi_interface`, `status`, `primaryIPv4`, `interfaces`, `platform`, `switch_connections`, `experimental` |
+| `LOG_LEVEL` (optional) | `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`                                                                                  |
+| `DATA` (optional)      | is a valid json dictionary                                                                                                                 |
 
 ## Jenkins Job
 MaaS2Netbox is accompanied with a Jenkins Job which can be added to any
@@ -92,10 +92,6 @@ conventions must be made:
 
 1. A node object in MaaS must have the same name in NetBox (case
 insensitive)
-2. A node object in NetBox must have the following custom fields:
-    * `TSM`: This field contains the TSM firmware version
-    * `BIOS`: This field contains the BIOS firmware version
-    * `PSU`: This field contains the Power Supply Unit firmware version
 
 ## Limitations
 At the moment, MaaS2Netbox support only Lenovo hardware nodes.

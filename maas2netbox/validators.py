@@ -299,58 +299,6 @@ class InterfacesValidator(Validator):
         return nodes_with_errors
 
 
-class FirmwareValidator(Validator):
-
-    def check_nodes(self):
-        logging.info('Check Firmware Versions declared at NetBox')
-        nodes_with_errors = {}
-
-        for node in self.netbox_nodes:
-            try:
-                custom_fields = node.custom_fields
-                if custom_fields['IPMI']:
-                    node_ip = self.get_hostname(custom_fields['IPMI'])
-                else:
-                    logging.error(
-                        'Node: {} Failure: No IPMI location declared'.format(
-                            node.name))
-                    continue
-                firmware_output = ipmi.get_firmware_versions(
-                    node_ip, config.ipmi_username, config.ipmi_password)
-                firmware_versions = ipmi.parse_firmware_versions(
-                    firmware_output)
-                if not firmware_versions:
-                    logging.error(
-                        'Node: {} Failure: Cannot communicate with node'
-                        .format(node.name))
-                    continue
-                found_errors = False
-                for firmware, version in firmware_versions.items():
-                    if custom_fields[firmware] != version:
-                        if not found_errors:
-                            nodes_with_errors[node.id] = {
-                                'current': {},
-                                'expected': {}
-                            }
-                            logging.info('Node: {}'.format(node.name))
-                            found_errors = True
-
-                        logging.info(
-                            'Firmware: {} Declared Version: {} '
-                            'Actual Version: {}'
-                            .format(
-                                firmware, custom_fields[firmware], version))
-                        nodes_with_errors[node.id]['current'][firmware] = \
-                            custom_fields[firmware]
-                        nodes_with_errors[node.id]['expected'][firmware] = \
-                            version
-            except Exception as e:
-                logging.error(
-                    'An error occurred for node: {}'.format(node.name), e)
-
-        return nodes_with_errors
-
-
 class PlatformValidator(Validator):
 
     def sanitized_maas_nodes(self):
