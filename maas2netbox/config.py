@@ -13,29 +13,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import pkg_resources
-import yaml
+import os
 
 from maas.client import enum
 
 
-def read_config():
-    with open(pkg_resources.resource_filename(
-            'maas2netbox', 'user_config/config.yml')) as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-config_dict = read_config()
-ipmi_username = config_dict['ipmi']['username']
-ipmi_password = config_dict['ipmi']['password']
-ipmi_dns_zone = config_dict['ipmi']['dns_zone']
-maas_url = config_dict['maas']['url']
-maas_api_key = config_dict['maas']['api_key']
-netbox_url = config_dict['netbox']['url']
-netbox_token = config_dict['netbox']['token']
-netbox_device_ids = config_dict['netbox']['device_ids']
-site_name = config_dict['site']
+ipmi_username = os.environ.get('IPMI_USERNAME')
+ipmi_password = os.environ.get('IPMI_PASSWORD')
+ipmi_dns_zone = os.environ.get('IPMI_DNS_ZONE')
+maas_url = os.environ.get('MAAS_URL')
+maas_api_key = os.environ.get('MAAS_API_KEY')
+netbox_url = os.environ.get('NETBOX_URL')
+netbox_token = os.environ.get('NETBOX_TOKEN')
+try:
+    netbox_device_ids = os.environ.get('NETBOX_DEVICE_IDS').split(',')
+except AttributeError:
+    netbox_device_ids = []
+site_name = os.environ.get('SITE')
 
 STATUS_DICT = {
     enum.NodeStatus.DEPLOYED: 'Active',
