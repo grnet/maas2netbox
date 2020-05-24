@@ -2,76 +2,69 @@
 [![codecov](https://codecov.io/gh/grnet/maas2netbox/branch/master/graph/badge.svg)](https://codecov.io/gh/grnet/maas2netbox)
 
 # MaaS2Netbox
-MaaS2Netbox is a project which aims to update an existing
-NetBox database of a Node inventory with information gathered by MaaS
-for the same set of Nodes.
+MaaS2Netbox is a project which aims to update an existing NetBox database of a Node inventory with information gathered
+by MaaS for the same set of Nodes.
 
-## Installation
+## Requirements
+In order to run MaaS2Netbox scripts the following requirements must be met:
 
-### Requirements
-In order to run MaaS2Netbox scripts the following requirements must be
-met:
+1. API read access to desired MaaS deployment
+2. API read access to desired NetBox deployment
+3. (optional) API write access to desired NetBox deployment in order to update the information stored in NetBox
 
-1. `docker` must be installed
-2. `docker-compose` must be installed
-3. Linux user must belong to either `docker` or `sudo` group
-4. Connectivity with the IPMI network of hardware nodes must be ensured
-4. API read access to desired MaaS deployment
-5. API read access to desired NetBox deployment
-6. (optional) API write access to desired NetBox deployment in order to
-update the information stored in NetBox
+## Docker
+```bash
+cd docker
+docker build -t maas2netbox .
+cp env.list.sampleenv.list
+# Edit docker/env.list with values of your choice
 
-### Setup
-If all requirements are met, user can start the MaaS2Netbox container
-with docker-compose by providing a config.yml file of the following
-format:
-
-```yaml
----
-ipmi:
-  username: user
-  password: userpass
-  dns_zone: mgmt.name.com
-maas:
-  url: https://maas.url
-  api_key: '123AB:CDEF:1234'
-netbox:
-  url: 'https://netbox.url'
-  token: '0123456789ABCDEF'
-  device_ids:
-    - 123
-    - 456
-site: dc_name
+# Run maas2netbox with --help option to display all available options
+docker run --env-file env.list maas2netbox maas2netbox --help
 ```
 
-#### Parameters
+## Virtualenv
+```bash
+# Create Virtual Environment and install maas2netbox
+virtualenv .venv -p python3
+source .venv/bin/activate
+pip install git+git://github.com/grnet/maas2netbox.git@master
+
+# Export environment variables to configure maas2netbox
+export IPMI_USERNAME=user
+export IPMI_PASSWORD=userpass
+export IPMI_DNS_ZONE=mgmt.name.com
+export MAAS_URL=https://maas.url
+export MAAS_API_KEY='123AB:CDEF:1234'
+export NETBOX_URL='https://netbox.url'
+export NETBOX_TOKEN='0123456789ABCDEF'
+export NETBOX_DEVICE_IDS=123,456
+export SITE=dc_name
+
+# Run maas2netbox with --help option to display all available options
+maas2netbox --help
+```
+
+## Configuration Options with Environment Variables
 
 | Name                | Description                                                           |
 | ----                | -----------                                                           |
-| IPMI `username`     | The username for IPMI access                                          |
-| IPMI `password`     | The password for IPMI access                                          |
-| MaaS `url`          | The Rest API url of MaaS Deployment                                   |
-| MaaS `api_key`      | The OATH API key for read transactions to MaaS Rest API endpoints     |
-| NetBox `url`        | The Rest API url of NetBox Deployment                                 |
-| NetBox `token`      | The token for read/write transactions to NetBox API endpoints         |
-| NetBox `device_ids` | A list containing all device type ids of nodes inside NetBox database |
-| `site`              | The name of the site whose machines are managed by MaaS               |
+| `IPMI_USERNAME`     | The username for IPMI access                                          |
+| `IPMI_PASSWORD`     | The password for IPMI access                                          |
+| `MAAS_URL`          | The Rest API url of MaaS Deployment                                   |
+| `MAAS_API_KEY`      | The OATH API key for read transactions to MaaS Rest API endpoints     |
+| `NETBOX_URL`        | The Rest API url of NetBox Deployment                                 |
+| `NETBOX_TOKEN`      | The token for read/write transactions to NetBox API endpoints         |
+| `NETBOX_DEVICE_IDS` | A list containing all device type ids of nodes inside NetBox database |
+| `SITE`              | The name of the site whose machines are managed by MaaS               |
 
-**NOTE 1:** All fields are mandatory
-
-**NOTE 2:** The config.yml should be placed at the same directory of
-docker-compose.
+**NOTE:** All environment variables are mandatory and should be set appropriately.
 
 ## Usage
-
-User can execute the MaaS2Netbox by a dedicated CLI inside Docker
-container:
-
-Usage: `maas2netbox [-h] -c COMMAND -f FIELD [--log LOG_LEVEL]
-[--data DATA]`
+Usage: `maas2netbox [-h] -c COMMAND -f FIELD [--log LOG_LEVEL] [--data DATA]`
 
 | Argument               | Valid Options                                                                                                                              |
-| --------               | -------------                                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `COMMAND`              | `validate`, `update`, `create`                                                                                                             |
 | `FIELD`                | `serialnumber`, `ipmi_location`, `ipmi_interface`, `status`, `primaryIPv4`, `interfaces`, `platform`, `switch_connections`, `experimental` |
 | `LOG_LEVEL` (optional) | `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`                                                                                  |
