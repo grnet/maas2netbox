@@ -23,10 +23,6 @@ def run_validation(args):
     validator = None
     if args.field == 'serialnumber':
         validator = validators.SerialNumberValidator(use_maas=True)
-    elif args.field == 'ipmi_location':
-        validator = validators.IPMIFieldValidator()
-    elif args.field == 'ipmi_interface':
-        validator = validators.IPMIInterfaceValidator()
     elif args.field == 'status':
         validator = validators.StatusValidator(use_maas=True)
     elif args.field == 'primaryIPv4':
@@ -49,10 +45,6 @@ def run_updates(args):
     updater = None
     if args.field == 'serialnumber':
         updater = updaters.SerialNumberUpdater(nodes_with_errors)
-    elif args.field == 'ipmi_location':
-        updater = updaters.IPMIFieldUpdater(nodes_with_errors)
-    elif args.field == 'ipmi_interface':
-        updater = updaters.IPMIInterfaceUpdater(nodes_with_errors)
     elif args.field == 'status':
         updater = updaters.StatusUpdater(nodes_with_errors)
     elif args.field == 'primaryIPv4':
@@ -68,9 +60,7 @@ def run_updates(args):
 
 
 def run_creators(args):
-    if args.field == 'ipmi_interface':
-        creator = creators.IPMIInterfaceCreator(args.data)
-    elif args.field == 'experimental':
+    if args.field == 'experimental':
         creator = creators.VirtualInterfacesCreator(args.data)
     else:
         raise NotImplementedError
@@ -91,9 +81,8 @@ def main():
         choices=['validate', 'update', 'create'], required=True)
     required_args.add_argument(
         '-f', dest='field', help='Choose field',
-        choices=['serialnumber', 'ipmi_location', 'ipmi_interface', 'status',
-                 'primaryIPv4', 'interfaces', 'platform', 'switch_connections',
-                 'experimental'],
+        choices=['serialnumber', 'status', 'primaryIPv4', 'interfaces',
+                 'platform', 'switch_connections', 'experimental'],
         required=True)
     parser.add_argument(
         '--log', dest='loglevel',

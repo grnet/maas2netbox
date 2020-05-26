@@ -18,9 +18,6 @@ import os
 from maas.client import enum
 
 
-ipmi_username = os.environ.get('IPMI_USERNAME')
-ipmi_password = os.environ.get('IPMI_PASSWORD')
-ipmi_dns_zone = os.environ.get('IPMI_DNS_ZONE')
 maas_url = os.environ.get('MAAS_URL')
 maas_api_key = os.environ.get('MAAS_API_KEY')
 netbox_url = os.environ.get('NETBOX_URL')

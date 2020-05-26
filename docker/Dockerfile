@@ -3,8 +3,7 @@ MAINTAINER Stamatis Katsaounis "skatsaounis@admin.grnet.gr"
 
 ARG BRANCH=master
 
-RUN apk --no-cache add --update ipmitool && \
-    apk --no-cache add --virtual .build-deps --update \
+RUN apk --no-cache add --virtual .build-deps --update \
         git \
         gcc \
         make \

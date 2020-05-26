@@ -54,15 +54,6 @@ class NetBoxAPI(object):
     def get_interface_types(self):
         return self.api.dcim.choices()['interface:type']
 
-    def get_node_ipmi_interface(self, node_id):
-        ifaces = self.get_node_interfaces(node_id)
-        ipmi_interface = None
-        for iface in ifaces:
-            if iface.mgmt_only:
-                ipmi_interface = iface
-                break
-        return ipmi_interface
-
     def get_vlan_id(self, vid):
         return self.api.ipam.vlans.get(site=config.site_name, vid=vid).id
 

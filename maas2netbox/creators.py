@@ -51,32 +51,6 @@ class Creator(object):
         raise NotImplementedError
 
 
-class IPMIInterfaceCreator(Creator):
-
-    def get_interface_type_value(self, interface_type_text):
-        interface_type_value = None
-        interface_types = self.netbox_api.get_interface_types()
-        for interface_type in interface_types:
-            if interface_type['label'] == interface_type_text:
-                interface_type_value = interface_type['value']
-                break
-        return interface_type_value
-
-    def create(self):
-        interface_data = {
-            'name': ''.join(self.data['mac_address'].split(':')),
-            'type': self.get_interface_type_value(
-                self.data['type']),
-            'device': self.data['node'],
-            'enabled': True,
-            'mtu': 1500,
-            'mac_address': self.data['mac_address'],
-            'mgmt_only': True,
-            'mode': 100
-        }
-        self.netbox_api.create_interface(interface_data)
-
-
 class VirtualInterfacesCreator(Creator):
 
     def get_iface_data(self, iface, node_id):

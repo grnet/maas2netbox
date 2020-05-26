@@ -31,9 +31,6 @@ source .venv/bin/activate
 pip install git+git://github.com/grnet/maas2netbox.git@master
 
 # Export environment variables to configure maas2netbox
-export IPMI_USERNAME=user
-export IPMI_PASSWORD=userpass
-export IPMI_DNS_ZONE=mgmt.name.com
 export MAAS_URL=https://maas.url
 export MAAS_API_KEY='123AB:CDEF:1234'
 export NETBOX_URL='https://netbox.url'
@@ -49,8 +46,6 @@ maas2netbox --help
 
 | Name                | Description                                                           |
 | ----                | -----------                                                           |
-| `IPMI_USERNAME`     | The username for IPMI access                                          |
-| `IPMI_PASSWORD`     | The password for IPMI access                                          |
 | `MAAS_URL`          | The Rest API url of MaaS Deployment                                   |
 | `MAAS_API_KEY`      | The OATH API key for read transactions to MaaS Rest API endpoints     |
 | `NETBOX_URL`        | The Rest API url of NetBox Deployment                                 |
@@ -63,12 +58,12 @@ maas2netbox --help
 ## Usage
 Usage: `maas2netbox [-h] -c COMMAND -f FIELD [--log LOG_LEVEL] [--data DATA]`
 
-| Argument               | Valid Options                                                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `COMMAND`              | `validate`, `update`, `create`                                                                                                             |
-| `FIELD`                | `serialnumber`, `ipmi_location`, `ipmi_interface`, `status`, `primaryIPv4`, `interfaces`, `platform`, `switch_connections`, `experimental` |
-| `LOG_LEVEL` (optional) | `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`                                                                                  |
-| `DATA` (optional)      | is a valid json dictionary                                                                                                                 |
+| Argument               | Valid Options                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| `COMMAND`              | `validate`, `update`, `create`                                                                          |
+| `FIELD`                | `serialnumber`, `status`, `primaryIPv4`, `interfaces`, `platform`, `switch_connections`, `experimental` |
+| `LOG_LEVEL` (optional) | `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`                                               |
+| `DATA` (optional)      | is a valid json dictionary                                                                              |
 
 ## Jenkins Job
 MaaS2Netbox is accompanied with a Jenkins Job which can be added to any
