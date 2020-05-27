@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 from maas.client.enum import NodeStatus
 
 from maas2netbox import config
-from maas2netbox.utils import ipmi, maas, netbox
+from maas2netbox.utils import maas, netbox
 
 
 class Validator(object):
@@ -79,99 +79,6 @@ class SerialNumberValidator(Validator):
                         'expected': maas_serial}
             except KeyError:
                 continue
-
-        return nodes_with_errors
-
-
-class IPMIFieldValidator(Validator):
-
-    def check_nodes(self):
-        logging.info('Check IPMI web address declared at NetBox')
-        nodes_with_errors = {}
-
-        for node in self.netbox_nodes:
-            try:
-                if node.custom_fields['IPMI']:
-                    declared_ipmi = node.custom_fields['IPMI']
-                else:
-                    logging.error(
-                        'Node: {} Failure: No IPMI location declared'.format(
-                            node.name))
-                    continue
-                ipmi_iface = self.netbox_api.get_node_ipmi_interface(
-                    node.id)
-                if ipmi_iface:
-                    mac_address = ipmi_iface.mac_address
-                    expected = 'https://{}.{}'.format(
-                        ''.join(mac_address.split(':')), config.ipmi_dns_zone)
-                    if mac_address == '00:00:00:00:00:00':
-                        logging.error(
-                            'Node: {} Failure: Erroneous IPMI MAC address '
-                            'found on NetBox'.format(node.name))
-                        continue
-                    if declared_ipmi != expected:
-                        logging.info(
-                            'Node: {} Declared IPMI: {} Expected IPMI: {}'
-                            .format(node.name, declared_ipmi, expected))
-                        nodes_with_errors[node.id] = {
-                            'current': declared_ipmi,
-                            'expected': expected}
-                else:
-                    logging.error(
-                        'Node: {} Declared IPMI: {} Failure: No IPMI '
-                        'interface found'.format(node.name, declared_ipmi))
-            except Exception as e:
-                logging.error(
-                    'An error occurred for node: {}'.format(node.name), e)
-
-        return nodes_with_errors
-
-
-class IPMIInterfaceValidator(Validator):
-
-    def check_nodes(self):
-        logging.info(
-            'Check MAC Address of the IPMI interface declared at NetBox')
-        nodes_with_errors = {}
-
-        for node in self.netbox_nodes:
-            try:
-                if node.custom_fields['IPMI']:
-                    declared_ipmi_address = self.get_hostname(
-                        node.custom_fields['IPMI'])
-                else:
-                    logging.error(
-                        'Node: {} Failure: No IPMI location declared'.format(
-                            node.name))
-                    continue
-                actual_mac_address = ipmi.get_mac_address(
-                    declared_ipmi_address, config.ipmi_username,
-                    config.ipmi_password).upper().decode()
-                if not actual_mac_address:
-                    logging.error(
-                        'Node: {} Failure: Could not fetch actual IPMI MAC '
-                        'address'.format(node.name))
-                    continue
-                ipmi_interface = self.netbox_api.get_node_ipmi_interface(
-                    node.id)
-                if not ipmi_interface:
-                    logging.error(
-                        'Node: {} Failure: No IPMI interface found at NetBox'
-                        .format(node.name))
-                    continue
-                declared_mac_address = ipmi_interface.mac_address
-                if declared_mac_address != actual_mac_address:
-                    logging.info(
-                        'Node: {} Declared MAC Address: {} '
-                        'Actual MAC Address: {}'
-                        .format(node.name, declared_mac_address,
-                                actual_mac_address))
-                    nodes_with_errors[ipmi_interface.id] = {
-                        'current': declared_mac_address,
-                        'expected': actual_mac_address}
-            except Exception as e:
-                logging.error(
-                    'An error occurred for node: {}'.format(node.name), e)
 
         return nodes_with_errors
 

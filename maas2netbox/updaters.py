@@ -36,26 +36,6 @@ class SerialNumberUpdater(Updater):
             self.netbox_api.patch_node(node_id, {'serial': value['expected']})
 
 
-class IPMIFieldUpdater(Updater):
-
-    def update_nodes(self):
-        for node_id, value in self.nodes_updates.items():
-            custom_fields = self.get_node_custom_fields(node_id)
-            custom_fields['IPMI'] = value['expected']
-            self.netbox_api.patch_node(
-                node_id, {'custom_fields': custom_fields})
-
-
-class IPMIInterfaceUpdater(Updater):
-
-    def update_nodes(self):
-        for interface_id, value in self.nodes_updates.items():
-            self.netbox_api.patch_interface(
-                interface_id, {
-                    'name': ''.join(value['expected'].split(':')),
-                    'mac_address': value['expected']})
-
-
 class StatusUpdater(Updater):
 
     def get_status_value(self, status_text):

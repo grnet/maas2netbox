@@ -4,10 +4,6 @@ pipeline {
         cron('H 4 * * *')
     }
     environment {
-        IPMI=credentials('IPMI')
-        IPMI_USERNAME="${env.IPMI_USR}"
-        IPMI_PASSWORD="${env.IPMI_PSW}"
-        IPMI_DNS_ZONE='mgmt.name.com'
         MAAS_URL='https://maas.url'
         MAAS_API_KEY=credentials('MAAS_API_KEY')
         NETBOX_URL='https://netbox.url'
@@ -24,22 +20,6 @@ pipeline {
                     }
                     steps {
                         sh 'maas2netbox -c validate --log INFO -f serialnumber'
-                    }
-                }
-                stage('ipmi-location-check') {
-                    agent {
-                        label 'maas2netbox-worker'
-                    }
-                    steps {
-                        sh 'maas2netbox -c validate --log INFO -f ipmi_location'
-                    }
-                }
-                stage('ipmi-interface-check') {
-                    agent {
-                        label 'maas2netbox-worker'
-                    }
-                    steps {
-                        sh 'maas2netbox -c validate --log INFO -f ipmi_interface'
                     }
                 }
                 stage('status-check') {

@@ -68,18 +68,3 @@ class CliTesting(unittest.TestCase):
 
         mock_updaters.SerialNumberUpdater.assert_called_once_with(check_result)
         self.assertEqual(update_result, result)
-
-    @patch('maas2netbox.cli.creators')
-    def test_run_creators(self, mock_creators):
-        ipmi_interface_creator = Mock()
-        mock_creators.IPMIInterfaceCreator.return_value = \
-            ipmi_interface_creator
-        create_result = Mock()
-        ipmi_interface_creator.create.return_value = create_result
-
-        args = Mock()
-        args.field = 'ipmi_interface'
-        result = self.m2n_cli.run_creators(args)
-
-        mock_creators.IPMIInterfaceCreator.assert_called_once_with(args.data)
-        self.assertEqual(create_result, result)
