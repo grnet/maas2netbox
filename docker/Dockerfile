@@ -1,5 +1,5 @@
 FROM python:3-alpine
-MAINTAINER Stamatis Katsaounis "skatsaounis@admin.grnet.gr"
+LABEL maintainer="skatsaounis@admin.grnet.gr"
 
 ARG BRANCH=master
 
