@@ -81,9 +81,6 @@ conventions must be made:
 1. A node object in MaaS must have the same name in NetBox (case
 insensitive)
 
-## Limitations
-At the moment, MaaS2Netbox support only Lenovo hardware nodes.
-
 ## Known Issues
 The following issues have been recorded and they will be fixed in newer
 versions of MaaS2Netbox:
