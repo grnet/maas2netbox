@@ -86,10 +86,8 @@ class SerialNumberValidator(Validator):
 class StatusValidator(Validator):
 
     def sanitized_maas_nodes(self):
-        sanitized_nodes = super(
-            StatusValidator, self).sanitized_maas_nodes()
         node_dict = {}
-        for node in sanitized_nodes:
+        for node in maas.get_nodes():
             node_dict[node.hostname.upper()] = node.status
 
         return node_dict
