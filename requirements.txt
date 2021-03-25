@@ -1,4 +1,4 @@
 pbr!=2.1.0
-PyYAML==5.1.2
+PyYAML==5.4
 python-libmaas==0.6.4
 pynetbox==4.0.8
